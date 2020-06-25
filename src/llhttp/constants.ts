@@ -51,6 +51,7 @@ export enum FLAGS {
   TRAILING = 1 << 7,
   LENIENT = 1 << 8,
   TRANSFER_ENCODING = 1 << 9,
+  RTSP = 1 << 10,
 }
 
 export enum METHODS {
@@ -98,13 +99,23 @@ export enum METHODS {
   SOURCE = 33,
   /* RFC-7540, section 11.6 */
   PRI = 34,
+  /* RTSP */
+  ANNOUNCE = 35,
+  SETUP = 36,
+  RECORD = 37,
+  PAUSE = 38,
+  FLUSH = 39,
+  TEARDOWN = 40,
+  SETPEERS = 41,
+  GET_PARAMETER = 42,
+  SET_PARAMETER = 43,
 }
 
 export const METHOD_MAP = enumToMap(METHODS);
 export const H_METHOD_MAP: IEnumMap = {};
 
 Object.keys(METHOD_MAP).forEach((key) => {
-  if (/^H/.test(key)) {
+  if (/^H/.test(key) || /^R/.test(key)) {
     H_METHOD_MAP[key] = METHOD_MAP[key];
   }
 });

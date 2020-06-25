@@ -221,18 +221,21 @@ export class HTTP {
 
     n('start_req_or_res')
       .peek('H', n('req_or_res_method'))
+      .peek('R', n('req_or_res_method')) // RTSP
       .otherwise(this.update('type', TYPE.REQUEST, 'start_req'));
 
     n('req_or_res_method')
       .select(H_METHOD_MAP, this.store('method',
         this.update('type', TYPE.REQUEST, 'req_first_space_before_url')))
       .match('HTTP/', this.update('type', TYPE.RESPONSE, 'res_http_major'))
+      .match('RTSP/', this.update('type', TYPE.RESPONSE, this.setFlag(FLAGS.RTSP, 'res_http_major')))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Invalid word encountered'));
 
     // Response
 
     n('start_res')
       .match('HTTP/', n('res_http_major'))
+      .match('RTSP/', this.setFlag(FLAGS.RTSP, 'res_http_major'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));
 
     n('res_http_major')
@@ -318,6 +321,7 @@ export class HTTP {
 
     n('req_http_start')
       .match('HTTP/', n('req_http_major'))
+      .match('RTSP/', this.setFlag(FLAGS.RTSP, 'req_http_major'))
       .match('ICE/', isSource)
       .match(' ', n('req_http_start'))
       .otherwise(p.error(ERROR.INVALID_CONSTANT, 'Expected HTTP/'));

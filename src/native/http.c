@@ -134,7 +134,8 @@ int llhttp_message_needs_eof(const llhttp_t* parser) {
 
 
 int llhttp_should_keep_alive(const llhttp_t* parser) {
-  if (parser->http_major > 0 && parser->http_minor > 0) {
+  if ((parser->http_major > 0 && parser->http_minor > 0) ||
+      (parser->flags & F_RTSP)) {
     /* HTTP/1.1 */
     if (parser->flags & F_CONNECTION_CLOSE) {
       return 0;
